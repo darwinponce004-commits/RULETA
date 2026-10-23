@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100817">
+<title>Emparejamiento al azar | Aizen</title>
+<style>
+:root{--bg:#f8f5fc;--panel:#fff;--purple:#6f42a6;--purple-dark:#432365;--lavender:#eee5f8;--text:#281b35;--muted:#71647d;--border:#d9c9ea;--pink:#bd83d5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+.wrap{max-width:1050px;margin:auto;padding:18px}
+.hero{background:var(--purple-dark);color:white;padding:24px 20px;border-radius:12px;border-bottom:5px solid var(--pink)}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#e4c9ff}
+.hero h1{font-size:clamp(1.8rem,5vw,2.6rem);margin:8px 0}
+.hero h1 span{color:#d8b6ff}.hero p{margin:0;color:#eee4f7}.quote{margin-top:12px;color:#e3c9fa;font-style:italic}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:14px;margin-top:14px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:17px;min-width:0;box-shadow:0 3px 12px #34204a0a}
+.panel h2{font-size:1.1rem;color:var(--purple-dark);margin:0 0 10px}
+.sub,.muted{color:var(--muted);font-size:.88rem}.sub{margin:0 0 12px}
+label{display:block;margin:12px 0 5px;font-size:.9rem;font-weight:600}
+input,select{width:100%;padding:11px;border:1px solid #cbb7df;border-radius:7px;background:#fff;color:var(--text);font:inherit}
+input:focus,select:focus{outline:2px solid #c9a6eb;border-color:var(--purple)}
+button{padding:10px 13px;border:0;border-radius:7px;background:var(--purple);color:white;font:600 .9rem Arial,sans-serif;cursor:pointer}
+button:hover{background:#583184}button:disabled{opacity:.5;cursor:not-allowed}.full{width:100%;margin-top:12px}.ghost{background:var(--lavender);color:var(--purple-dark)}.ghost:hover{background:#dfcef1}.danger{background:#8e315f}.danger:hover{background:#702448}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.stat{background:var(--lavender);border:1px solid var(--border);border-radius:8px;text-align:center;padding:12px 5px}.stat strong{display:block;font-size:1.6rem;color:var(--purple-dark)}.stat span{font-size:.75rem;color:var(--muted)}
+.drawbox{min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:22px;background:#fbf8ff;border:1px solid var(--border);border-radius:10px}.sigil{font-size:2.2rem;color:var(--purple)}.drawbox h2{margin:8px 0}.drawbox p{max-width:450px;color:var(--muted)}.drawbox button{margin-top:8px}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin-top:12px}.pair{padding:12px;border:1px solid var(--border);background:#fbf8ff;border-radius:8px}.pair small{color:var(--purple);font-weight:bold}.pair strong{display:block;margin:6px 0}.tag{font-size:.75rem;color:var(--purple)}.person{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #eee6f5;font-size:.88rem}.person:last-child{border-bottom:0}.message{font-size:.85rem;color:var(--purple-dark);min-height:1.2em;margin:9px 0 0}.section-title{font-weight:bold;color:var(--purple-dark);margin:18px 0 7px;font-size:.9rem}.foot{text-align:center;color:var(--muted);font-size:.75rem;margin:20px 0 0}.hidden{display:none!important}.result-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.wrap{padding:12px}.hero{padding:20px}.panel{padding:15px}.stats{gap:6px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero"><div class="eyebrow">Un destino. Dos nombres. Una decisión.</div><h1>Emparejamiento <span>al azar</span></h1><p>Regístrate. Espera la señal. Deja que el azar revele el resultado.</p><div class="quote">"El azar también es una forma de control." <span class="tag">— Inspirado en Aizen</span></div></header>
+<div class="grid">
+<section class="panel left">
+<h2>Registro</h2><p class="sub">Ingresa tu apodo y selecciona tu género para participar en el sorteo.</p>
+<form id="registerForm"><label for="nickname">Apodo</label><input id="nickname" maxlength="30" autocomplete="nickname" placeholder="Tu apodo..." required>
+<label for="gender">Género</label><select id="gender"><option value="hombre">Hombre</option><option value="mujer">Mujer</option></select>
+<button class="full" id="registerBtn">✦ Registrarme</button></form><p class="message" id="registerMessage" aria-live="polite"></p>
+<div class="quote">"No hay un bien ni un mal absoluto… solo perspectivas."</div>
+</section>
+<section class="center">
+<div class="stats"><div class="stat"><strong id="total">0</strong><span>Participantes</span></div><div class="stat"><strong id="men">0</strong><span>Hombres</span></div><div class="stat"><strong id="women">0</strong><span>Mujeres</span></div></div>
+<div class="drawbox"><div class="sigil">蝶</div><h2 id="drawTitle">El tablero aún está vacío</h2><p id="drawDesc">Cuando haya participantes de ambos géneros, el administrador podrá iniciar el sorteo.</p><button id="drawBtn" disabled>⤨ Sortear parejas</button></div>
+<div id="results" class="hidden panel" style="margin-top:16px"><div class="result-head"><h2 style="margin:0">Resultado del sorteo</h2><button id="copyBtn" class="ghost">Copiar resultados</button></div><div id="pairs" class="pairs"></div><div id="leftovers"></div></div>
+</section>
+<aside class="panel right">
+<h2>Administrador</h2><p class="sub">Acceso reservado para gestionar el sorteo.</p>
+<form id="loginForm"><label for="adminEmail">Correo del administrador</label><input id="adminEmail" type="email" autocomplete="username" placeholder="admin@ejemplo.com" required><label for="adminPassword">Contraseña</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Tu contraseña" required><button class="full" id="loginBtn">Entrar</button></form>
+<div id="adminTools" class="hidden"><p class="message" id="adminStatus">Sesión iniciada.</p><button id="logoutBtn" class="ghost full">Cerrar sesión</button><button id="resetBtn" class="danger full">Reiniciar participantes y sorteo</button></div>
+<p class="message" id="adminMessage" aria-live="polite"></p>
+<div class="section-title">Participantes registrados</div><div id="participantList"><p class="muted">Cargando registros…</p></div>
+</aside>
+</div><p class="foot">EMPAREJAMIENTO AL AZAR · Una creación de tu grupo · Diseño inspirado en el aura de Aizen</p>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/*
+CONFIGURACIÓN:
+1) Copia aquí la configuración de tu proyecto Firebase.
+2) Crea en Firebase Authentication un usuario de administrador (correo y contraseña).
+3) En firestore.rules reemplaza REPLACE_WITH_ADMIN_UID por el UID de ese usuario.
+*/
+const firebaseConfig = {
+  apiKey: "AIzaSyAONpaGKwMl3Y_fNnSYQCjDbzawLhVEIm4",
+  authDomain: "ruleta-53d8a.firebaseapp.com",
+  projectId: "ruleta-53d8a",
+  storageBucket: "ruleta-53d8a.firebasestorage.app",
+  messagingSenderId: "876801353008",
+  appId: "1:876801353008:web:1196606855d8334017d4f5",
+  measurementId: "G-X37XL4FCPE"
+};
+const configured = firebaseConfig.apiKey !== "PEGA_AQUI_TU_API_KEY";
+const $ = id => document.getElementById(id);
+let db=null, auth=null, isAdmin=false, participants=[], latestDraw=null, unsubscribePeople=null, unsubscribeDraw=null;
+function msg(id,text){$(id).textContent=text||""}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showAdmin(){ $("loginForm").classList.toggle("hidden",isAdmin);$("adminTools").classList.toggle("hidden",!isAdmin);$("drawBtn").disabled=!isAdmin || Math.min(participants.filter(p=>p.gender==="hombre").length,participants.filter(p=>p.gender==="mujer").length)===0;renderPeople();}
+function renderPeople(){
+ $("total").textContent=participants.length;$("men").textContent=participants.filter(p=>p.gender==="hombre").length;$("women").textContent=participants.filter(p=>p.gender==="mujer").length;
+ $("participantList").innerHTML=participants.length?participants.map(p=>`<div class="person"><span>${esc(p.nickname)}</span><span class="tag">${p.gender==="hombre"?"Hombre":"Mujer"}</span>${isAdmin?`<button class="danger" data-remove="${p.id}" style="padding:5px 8px;font-size:.72rem">Quitar</button>`:""}</div>`).join(""):'<p class="muted">No hay participantes aún.</p>';
+ $("participantList").querySelectorAll("[data-remove]").forEach(b=>b.onclick=async()=>{try{await db.collection("participants").doc(b.dataset.remove).delete();await db.collection("settings").doc("currentDraw").delete().catch(()=>{});msg("adminMessage","Participante eliminado.");}catch(e){msg("adminMessage","No se pudo eliminar: "+e.message)}});
+ $("drawBtn").disabled=!isAdmin||Math.min(participants.filter(p=>p.gender==="hombre").length,participants.filter(p=>p.gender==="mujer").length)===0;
+}
+function setupRealtime(){
+ if(unsubscribePeople)unsubscribePeople();if(unsubscribeDraw)unsubscribeDraw();
+ unsubscribePeople=db.collection("participants").orderBy("createdAt").onSnapshot(s=>{participants=s.docs.map(d=>({id:d.id,...d.data()}));renderPeople();},e=>msg("registerMessage","Error cargando participantes. Revisa las reglas de Firestore."));
+ unsubscribeDraw=db.collection("settings").doc("currentDraw").onSnapshot(d=>{latestDraw=d.exists?d.data():null;renderDraw();},()=>{});
+}
+function renderDraw(){
+ if(!latestDraw){$("results").classList.add("hidden");$("drawTitle").textContent="El tablero está preparado";$("drawDesc").textContent="Cuando haya participantes de ambos géneros, el administrador podrá iniciar el sorteo.";return;}
+ $("results").classList.remove("hidden");$("drawTitle").textContent="El destino ha sido revelado";$("drawDesc").textContent=`Sorteo realizado: ${latestDraw.pairs.length} pareja(s).`;
+ $("pairs").innerHTML=latestDraw.pairs.map((p,i)=>`<div class="pair"><small>Pareja ${i+1}</small><strong>${esc(p[0].nickname)}</strong><span class="tag">＋</span><strong>${esc(p[1].nickname)}</strong></div>`).join("");
+ $("leftovers").innerHTML=latestDraw.leftovers?.length?`<div class="section-title">Sin pareja esta ronda</div><p class="muted">${latestDraw.leftovers.map(p=>esc(p.nickname)).join(", ")}</p>`:'<p class="muted">Todos los participantes tienen pareja.</p>';
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+$("registerForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!configured){msg("registerMessage","Falta configurar Firebase. Sigue el archivo LEEME.");return}
+ const nickname=$("nickname").value.trim(),gender=$("gender").value;if(!nickname)return;
+ $("registerBtn").disabled=true;
+ try{
+ const exists=participants.some(p=>p.nickname.toLocaleLowerCase()===nickname.toLocaleLowerCase());
+ if(exists){msg("registerMessage","Ese apodo ya está registrado. Prueba otro.");return}
+ await db.collection("participants").add({nickname,gender,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+ $("nickname").value="";msg("registerMessage","Registro completado. Ya apareces en la lista compartida.");
+ }catch(err){msg("registerMessage","No se pudo registrar. Revisa la configuración y las reglas de Firebase.");}
+ finally{$("registerBtn").disabled=false}
+});
+$("loginForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!configured){msg("adminMessage","Primero configura Firebase. Sigue el archivo LEEME.");return}
+ $("loginBtn").disabled=true;
+ try{await auth.signInWithEmailAndPassword($("adminEmail").value.trim(),$("adminPassword").value);msg("adminMessage","Acceso concedido.");}
+ catch(err){msg("adminMessage","No se pudo iniciar sesión. Verifica correo y contraseña.");}
+ finally{$("loginBtn").disabled=false}
+});
+$("logoutBtn").onclick=()=>auth.signOut();
+$("resetBtn").onclick=async()=>{
+ if(!confirm("¿Seguro que quieres borrar todos los participantes y el sorteo? Esta acción no se puede deshacer."))return;
+ try{const batch=db.batch();participants.forEach(p=>batch.delete(db.collection("participants").doc(p.id)));batch.delete(db.collection("settings").doc("currentDraw"));await batch.commit();msg("adminMessage","Se reinició la lista.");}
+ catch(e){msg("adminMessage","No se pudo reiniciar. Si hay muchos participantes, elimínalos por tandas.");}
+};
+$("drawBtn").onclick=async()=>{
+ if(!isAdmin)return;
+ const men=shuffle(participants.filter(p=>p.gender==="hombre").slice()),women=shuffle(participants.filter(p=>p.gender==="mujer").slice()),n=Math.min(men.length,women.length);
+ if(!n){msg("adminMessage","Debe haber al menos un hombre y una mujer.");return}
+ const pairs=Array.from({length:n},(_,i)=>[{nickname:men[i].nickname,gender:men[i].gender},{nickname:women[i].nickname,gender:women[i].gender}]);
+ const leftovers=[...men.slice(n),...women.slice(n)].map(p=>({nickname:p.nickname,gender:p.gender}));
+ try{await db.collection("settings").doc("currentDraw").set({pairs,leftovers,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid});msg("adminMessage","Sorteo publicado para todos los visitantes.");}
+ catch(e){msg("adminMessage","No se pudo publicar el sorteo. Verifica las reglas de Firestore.");}
+};
+$("copyBtn").onclick=async()=>{if(!latestDraw)return;const txt="RESULTADOS DEL SORTEO\n"+latestDraw.pairs.map((p,i)=>`Pareja ${i+1}: ${p[0].nickname} + ${p[1].nickname}`).join("\n")+(latestDraw.leftovers?.length?"\nSin pareja: "+latestDraw.leftovers.map(p=>p.nickname).join(", "):"");try{await navigator.clipboard.writeText(txt);$("copyBtn").textContent="¡Copiado!";}catch{msg("adminMessage","No se pudo copiar automáticamente.")}};
+if(configured){
+ firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.firestore();
+ auth.onAuthStateChanged(user=>{isAdmin=!!user;showAdmin();if(user)msg("adminStatus","Sesión iniciada como administrador.");});
+ setupRealtime();
+}else{
+ $("drawTitle").textContent="Falta conectar Firebase";$("drawDesc").textContent="La apariencia está lista, pero debes conectar tu proyecto para compartir registros entre celulares.";
+ msg("registerMessage","Configura Firebase siguiendo LEEME.md.");msg("adminMessage","El acceso del administrador usa Firebase Authentication.");
+}
+</script></body></html>
