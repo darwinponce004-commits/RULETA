@@ -104,9 +104,7 @@ $("registerForm").addEventListener("submit",async e=>{
  if(exists){msg("registerMessage","Ese apodo ya está registrado. Prueba otro.");return}
  await db.collection("participants").add({nickname,gender,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
  $("nickname").value="";msg("registerMessage","Registro completado. Ya apareces en la lista compartida.");
- }catch(err){msg("registerMessage","No se pudo registrar. Revisa la configuración y las reglas de Firebase.");}
- finally{$("registerBtn").disabled=false}
-});
+catch(e){msg("adminMessage","Error: "+e.code+" — "+e.message);}
 $("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!configured){msg("adminMessage","Primero configura Firebase. Sigue el archivo LEEME.");return}
  $("loginBtn").disabled=true;
